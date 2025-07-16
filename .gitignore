@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+
+# macOS
+.DS_Store
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# System files
+Thumbs.db
+
+select_data.sh
+classify.sh
+
+.idea/
+test_select.py
+TSRD-Test/
+
+filtered-tsrd-test/
+tsrd-train/

@@ -57,8 +57,10 @@ def main() -> None:
         print("Please enter a valid floating-point number.")
         return
 
-    src_root = Path("data/tsrd-train")          # original clean dataset
-    dst_root = Path(f"data/tsrd-train{std}")    # noisy copy destination
+    src_root = Path("data/filtered-tsrd-test")          # original clean dataset
+    dst_root = Path(f"data/filtered-tsrd-test{std}")    # noisy copy destination
+#src_root = Path("data/tsrd-train")          # original clean dataset
+#dst_root = Path(f"data/tsrd-train{std}")    # noisy copy destination
 
     if not src_root.exists():
         print(f"Source folder not found: {src_root}")

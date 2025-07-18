@@ -13,6 +13,16 @@ for filepath in "$input_folder"/*; do
     # Create target directory if it doesn't exist
     mkdir -p "$input_folder/$prefix"
 
+### Instruction:
+
+Version1:
+
+1. Run 'addgeneral.py' to create a data file "..." with induced noise
+2. Rename ...
+3. Run 'cleanmodel.py' to create and train clean model
+4. Run 'noisemodel.py' to create and train noise model 
+
+
     # Move file
     mv "$filepath" "$input_folder/$prefix/"
 done

@@ -2,13 +2,14 @@
 Computer Vision (Denoising)
 
 
-[Dataset](https://benchmark.ini.rub.de/gtsrb_news.html)
-
-J. Stallkamp, M. Schlipsing, J. Salmen, C. Igel, Man vs. computer: Benchmarking machine learning algorithms for traffic sign recognition, Neural Networks, Available online 20 February 2012, ISSN 0893-6080, 10.1016/j.neunet.2012.02.016. (http://www.sciencedirect.com/science/article/pii/S0893608012000457) Keywords: Traffic sign recognition; Machine learning; Convolutional neural networks; Benchmarking
-
+Dataset: [GTSRB](https://benchmark.ini.rub.de/gtsrb_news.html)\
+J. Stallkamp, M. Schlipsing, J. Salmen, and C. Igel. The German Traffic Sign Recognition Benchmark: A multi-class classification competition. In Proceedings of the IEEE International Joint Conference on Neural Networks, pages 1453–1460. 2011. 
 
 
----
+[//]: # (J. Stallkamp, M. Schlipsing, J. Salmen, C. Igel, Man vs. computer: Benchmarking machine learning algorithms for traffic sign recognition, Neural Networks, Available online 20 February 2012, ISSN 0893-6080, 10.1016/j.neunet.2012.02.016. &#40;http://www.sciencedirect.com/science/article/pii/S0893608012000457&#41; Keywords: Traffic sign recognition; Machine learning; Convolutional neural networks; Benchmarking)
+
+
+
 # How to use this repo:
 This is the script to select data from raw dataset.
 ```bash

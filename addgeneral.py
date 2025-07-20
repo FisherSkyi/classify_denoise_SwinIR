@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import numpy as np
 from PIL import Image
+
 from wand.image import Image as WandImage
 import io
 

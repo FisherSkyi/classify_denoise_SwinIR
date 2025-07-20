@@ -44,3 +44,11 @@ GTSRB.zip
 GTSRB/
 
 tsr-analysis-src/
+
+SwinIR/.venv/
+SwinIR/.idea/
+SwinIR/.figs/
+SwinIR/results/
+SwinIR/.vscode/
+SwinIR/testsets/
+

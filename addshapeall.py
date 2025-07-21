@@ -4,10 +4,13 @@ import random
 import numpy as np
 from PIL import Image, ImageDraw
 
-def add_circle(img: Image.Image, size: float, max_size: float) -> Image.Image:
+def add_circle(img, size: float, max_size: float) -> Image.Image:
     """
     Add a random circle to the image with size relative to image dimensions.
     """
+    if isinstance(img, np.ndarray):
+        img = Image.fromarray((img * 255).clip(0, 255).astype(np.uint8))
+
     draw = ImageDraw.Draw(img)
     width, height = img.size
     
@@ -28,10 +31,14 @@ def add_circle(img: Image.Image, size: float, max_size: float) -> Image.Image:
     draw.ellipse([x - radius, y - radius, x + radius, y + radius], fill=color)
     return img
 
-def add_triangle(img: Image.Image, size: float, max_size: float) -> Image.Image:
+def add_triangle(img, size: float, max_size: float) -> Image.Image:
     """
     Add a random triangle to the image with size relative to image dimensions.
     """
+    if isinstance(img, np.ndarray):
+        img = Image.fromarray((img * 255).clip(0, 255).astype(np.uint8))
+
+
     draw = ImageDraw.Draw(img)
     width, height = img.size
     
@@ -60,10 +67,13 @@ def add_triangle(img: Image.Image, size: float, max_size: float) -> Image.Image:
     draw.polygon(points, fill=color)
     return img
 
-def add_square(img: Image.Image, size: float, max_size: float) -> Image.Image:
+def add_square(img, size: float, max_size: float) -> Image.Image:
     """
     Add a random square to the image with size relative to image dimensions.
     """
+    if isinstance(img, np.ndarray):
+        img = Image.fromarray((img * 255).clip(0, 255).astype(np.uint8))
+
     draw = ImageDraw.Draw(img)
     width, height = img.size
     
@@ -84,10 +94,13 @@ def add_square(img: Image.Image, size: float, max_size: float) -> Image.Image:
     draw.rectangle([x - side // 2, y - side // 2, x + side // 2, y + side // 2], fill=color)
     return img
 
-def add_random_shapes(img: Image.Image, max_size: float) -> Image.Image:
+def add_random_shapes(img, max_size: float) -> Image.Image:
     """
     Add one circle, one triangle, and one square to the image with random sizes, positions, and colors.
     """
+    if isinstance(img, np.ndarray):
+        img = Image.fromarray((img * 255).clip(0, 255).astype(np.uint8))
+
     # List of shape functions
     shape_functions = [add_circle, add_triangle, add_square]
     

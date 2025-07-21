@@ -8,21 +8,57 @@ J. Stallkamp, M. Schlipsing, J. Salmen, and C. Igel. The German Traffic Sign Rec
 
 [//]: # (J. Stallkamp, M. Schlipsing, J. Salmen, C. Igel, Man vs. computer: Benchmarking machine learning algorithms for traffic sign recognition, Neural Networks, Available online 20 February 2012, ISSN 0893-6080, 10.1016/j.neunet.2012.02.016. &#40;http://www.sciencedirect.com/science/article/pii/S0893608012000457&#41; Keywords: Traffic sign recognition; Machine learning; Convolutional neural networks; Benchmarking)
 
-
+```text
+# Directory structure of the dataset
+test/
+  ├── Images/
+  │    ├── 00000.ppm
+  │    ├── 00001.ppm
+  │    └── ...
+  └── GT-final_test.csv  # contains image names and labels
+train/
+  ├── class0/
+  │    ├── img1.png
+  │    ├── ...
+  │    └── GT-00000.csv
+  ├── class1/
+  │    ├── imgA.png
+  │    ├── ...
+  ├── Readme-Images.txt
+```
 
 # How to use this repo:
-This is the script to select data from raw dataset.
-```bash
-#!/bin/bash
 
-input_folder="./filtered-tsrd-test"
+[//]: # (This is the script to select data from raw dataset.)
 
-for filepath in "$input_folder"/*; do
-    filename=$(basename "$filepath")
-    prefix=${filename:0:3}
+[//]: # (```bash)
 
-    # Create target directory if it doesn't exist
-    mkdir -p "$input_folder/$prefix"
+[//]: # (#!/bin/bash)
+
+[//]: # ()
+[//]: # (input_folder="./filtered-tsrd-test")
+
+[//]: # ()
+[//]: # (for filepath in "$input_folder"/*; do)
+
+[//]: # (    filename=$&#40;basename "$filepath"&#41;)
+
+[//]: # (    prefix=${filename:0:3})
+
+[//]: # ()
+[//]: # (    # Create target directory if it doesn't exist)
+
+[//]: # (    mkdir -p "$input_folder/$prefix")
+
+[//]: # (  )
+[//]: # (    # Move file)
+
+[//]: # (    mv "$filepath" "$input_folder/$prefix/")
+
+[//]: # ()
+[//]: # (done)
+
+[//]: # (```)
 
 ### Instruction:
 
@@ -34,33 +70,46 @@ Version1:
 4. Run 'noisemodel.py' to create and train noise model 
 
 
-    # Move file
-    mv "$filepath" "$input_folder/$prefix/"
-done
-```
----
-This is the script to choose the top 10 classes with mose number of samples.
-```bash
-#!/bin/bash
 
-input_folder="./tsrd-train"
-unused_folder="$input_folder/unused"
+[//]: # (This is the script to choose the top 10 classes with mose number of samples.)
 
-mkdir -p "$unused_folder"
+[//]: # (```bash)
 
-top_folders=$(find "$input_folder" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
-    count=$(find "$dir" -type f -iname "*.png" | wc -l)
-    echo "$count $dir"
-done | sort -nr | head -n 10 | awk '{print $2}')
+[//]: # (#!/bin/bash)
 
-find "$input_folder" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
-    if ! echo "$top_folders" | grep -Fxq "$dir"; then
-        if [ "$dir" != "$unused_folder" ]; then
-            mv "$dir" "$unused_folder/"
-        fi
-    fi
-done
-```
+[//]: # ()
+[//]: # (input_folder="./tsrd-train")
+
+[//]: # (unused_folder="$input_folder/unused")
+
+[//]: # ()
+[//]: # (mkdir -p "$unused_folder")
+
+[//]: # ()
+[//]: # (top_folders=$&#40;find "$input_folder" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do)
+
+[//]: # (    count=$&#40;find "$dir" -type f -iname "*.png" | wc -l&#41;)
+
+[//]: # (    echo "$count $dir")
+
+[//]: # (done | sort -nr | head -n 10 | awk '{print $2}'&#41;)
+
+[//]: # ()
+[//]: # (find "$input_folder" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do)
+
+[//]: # (    if ! echo "$top_folders" | grep -Fxq "$dir"; then)
+
+[//]: # (        if [ "$dir" != "$unused_folder" ]; then)
+
+[//]: # (            mv "$dir" "$unused_folder/")
+
+[//]: # (        fi)
+
+[//]: # (    fi)
+
+[//]: # (done)
+
+
 ---
 ### Day 1 of coding July 17
 Helped everyone clone github to their computers

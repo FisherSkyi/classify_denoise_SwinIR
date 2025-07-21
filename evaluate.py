@@ -29,3 +29,10 @@ def test(model_path: str):
             total += labels.size(0)
 
     print(f"Test accuracy: {correct / total:.4f}")
+
+def main():
+    model_path = "resnet18_gtsrb.pth"  # Path to the saved model
+    test(model_path)
+
+if __name__ == "__main__":
+    main()

@@ -1,15 +1,20 @@
-## License
+# Road Sign Classification with Denoising Pipeline Approach
+[Yu Letian](https://github.com/FisherSkyi), Sun Yuqi
 
-This repository is licensed under the [Apache License 2.0](LICENSE).  
-It includes code from [SwinIR](https://github.com/JingyunLiang/SwinIR),  
-which is also licensed under the Apache License 2.0.
+[email of author](yuletian@u.nus.edu)
 
-Dataset: [GTSRB](https://benchmark.ini.rub.de/gtsrb_news.html)\
-J. Stallkamp, M. Schlipsing, J. Salmen, and C. Igel. The German Traffic Sign Recognition Benchmark: A multi-class classification competition. In Proceedings of the IEEE International Joint Conference on Neural Networks, pages 1453–1460. 2011. 
+---
 
+This repository is the official PyTorch implementation of our paper *Road Sign Classification with Denoising Pipeline Approach*
 
-
-
+#### Contents
+1. [Dataset](#Dataset)
+1. [Training](#Training)
+1. [Testing](#Testing)
+1. [Results](#Results)
+1. [Citation](#Citation)
+1. [License and Acknowledgement](#License-and-Acknowledgement)
+### Dataset
 ```text
 # Directory structure of the dataset
 test/
@@ -29,35 +34,13 @@ train/
   ├── Readme-Images.txt
 ```
 
-# How to use this repo:
+### License-and-Acknowledgement
 
+This repository is licensed under the [Apache License 2.0](LICENSE).  
+It includes code from [SwinIR](https://github.com/JingyunLiang/SwinIR), which is also licensed under the Apache License 2.0. Please also follow their licenses. 
 
-### Instruction:
+It contains code for training and testing models on the [GTSRB dataset](https://benchmark.ini.rub.de/gtsrb_news.html).
+(J. Stallkamp, M. Schlipsing, J. Salmen, and C. Igel. The German Traffic Sign Recognition Benchmark: A multi-class classification competition. In Proceedings of the IEEE International Joint Conference on Neural Networks, pages 1453–1460. 2011.) 
 
-Version1:
+Thanks for their awesome works.
 
-1. Run 'addgeneral.py' to create a data file "..." with induced noise
-2. Rename ...
-3. Run 'cleanmodel.py' to create and train clean model
-4. Run 'noisemodel.py' to create and train noise model 
-
----
-### Day 1 of coding July 17
-Helped everyone clone github to their computers
-
-Also started adding noise to the dataset
-
-``print("hello world!\n"");``
-
->If you research interest is traffic sign recognition or 
-detection,please download the database without 
-submitting application forms
-
-Finish training model B and C and get results
-
->
-
-### Day 2 of coding July 18
-Finish research presentation1
-
-Continue reading related work

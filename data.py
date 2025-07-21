@@ -84,9 +84,8 @@ def get_class_names_from_folder(directory):
   class_names = np.array(sorted([item.name for item in data_dir.glob("*")])) # Created a list of class names
   return class_names
 
-def split_dataset(directory = "data/tsrd-train") -> None:
-
-    split_dir_to_train_test_val(directory,
+directory = input("please input the directory path to split: ")
+split_dir_to_train_test_val(directory,
                                 train_size=0.8,
                                 val_size=0.2)
     

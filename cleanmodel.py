@@ -5,12 +5,22 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten, Conv2D, MaxPool2D
 from tensorflow.keras.optimizers import Adam
+import pandas as pd
 
 def main() -> None:
 
     train_datagen = ImageDataGenerator(rescale=1/255.)
     val_datagen = ImageDataGenerator(rescale=1/255.)
 
+<<<<<<< HEAD
+    train_data = train_datagen.flow_from_directory(directory="files/train",
+                                                target_size=(240, 240),
+                                                batch_size=32,
+                                                class_mode="categorical")
+
+    validation_data = val_datagen.flow_from_directory(directory="files/validation",
+                                                target_size=(240, 240),
+=======
     train_data = train_datagen.flow_from_directory(directory="GTSRB/train/Final_Training/Images",
                                                 target_size=(64, 64),
                                                 batch_size=32,
@@ -18,13 +28,19 @@ def main() -> None:
 
     validation_data = val_datagen.flow_from_directory(directory="original/validation",
                                                 target_size=(64, 64),
+>>>>>>> aa306b217d4dc6454446664a919446cfd2595a1d
                                                 batch_size=32,
                                                 class_mode="categorical")
 
 
     test_datagen = ImageDataGenerator(rescale=1/255.)
+<<<<<<< HEAD
+    test_data = test_datagen.flow_from_directory(directory="GTSRB/test",
+                                                target_size=(240, 240),
+=======
     test_data = test_datagen.flow_from_directory(directory="data/filtered-tsrd-test20.0",
                                                 target_size=(64, 64),
+>>>>>>> aa306b217d4dc6454446664a919446cfd2595a1d
                                                 batch_size=32,
                                                 class_mode="categorical")
 
@@ -43,7 +59,7 @@ def main() -> None:
         Conv2D(16, 3, activation="relu"),
         MaxPool2D(pool_size=2),
         Flatten(),
-        Dense(10, activation="softmax")
+        Dense(43, activation="softmax")
     ])
 
 
@@ -58,8 +74,8 @@ def main() -> None:
 
     # Fit the model
 
-    batch_sizes = 32
-    epoch = 8
+    batch_sizes = 64
+    epoch = 3
     trainsteps = (train_data.n//batch_sizes)
     valsteps = (validation_data.n//batch_sizes)
     print(train_data.n)
@@ -78,9 +94,8 @@ def main() -> None:
 
     # Evaluate model
 
-    model.evaluate(test_data)
+#model.evaluate(test_data)
 
-    import pandas as pd
 
     pd.DataFrame(history.history).plot()
 

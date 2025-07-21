@@ -11,20 +11,20 @@ def main() -> None:
     train_datagen = ImageDataGenerator(rescale=1/255.)
     val_datagen = ImageDataGenerator(rescale=1/255.)
 
-    train_data = train_datagen.flow_from_directory(directory="original/train",
-                                                target_size=(240, 240),
+    train_data = train_datagen.flow_from_directory(directory="GTSRB/train/Final_Training/Images",
+                                                target_size=(64, 64),
                                                 batch_size=32,
                                                 class_mode="categorical")
 
     validation_data = val_datagen.flow_from_directory(directory="original/validation",
-                                                target_size=(240, 240),
+                                                target_size=(64, 64),
                                                 batch_size=32,
                                                 class_mode="categorical")
 
 
     test_datagen = ImageDataGenerator(rescale=1/255.)
     test_data = test_datagen.flow_from_directory(directory="data/filtered-tsrd-test20.0",
-                                                target_size=(240, 240),
+                                                target_size=(64, 64),
                                                 batch_size=32,
                                                 class_mode="categorical")
 

@@ -91,28 +91,28 @@ def main():
             output = np.transpose(output[[2, 1, 0], :, :], (1, 2, 0))  # CHW-RGB to HCW-BGR
         output = (output * 255.0).round().astype(np.uint8)  # float32 to uint8
 
-        if img_gt is not None:
-            # print(img_gt.s)
-            clean_img = img_gt[:,:,::-1]
-            noisy_img = img_lq.cpu().numpy().squeeze()
-            if noisy_img.ndim == 3:
-                noisy_img = np.transpose(noisy_img, (1, 2, 0))  # CHW to HWC
-                # noisy_img_for_plot = np.clip(noisy_img, 0, 1)  # float32 to uint8
-            denoised_img = output / 255.0 if output.max() > 1 else output  # Ensure float [0,1]
-            denoised_img = denoised_img[:, :, ::-1]  # BGR to RGB for plotting
-
-            fig, axs = plt.subplots(1, 3, figsize=(12, 4))
-            axs[0].imshow(clean_img)
-            axs[0].set_title('Clean Image')
-            axs[1].imshow(noisy_img)
-            axs[1].set_title('Noisy Image')
-            axs[2].imshow(denoised_img)
-            axs[2].set_title('Denoised Image')
-            for ax in axs:
-                ax.axis('off')
-            plt.tight_layout()
-            plt.show()
-        cv2.imwrite(f'{save_dir}/{imgname}_SwinIR.png', output)
+        # if img_gt is not None:
+        #     # print(img_gt.s)
+        #     clean_img = img_gt[:,:,::-1]
+        #     noisy_img = img_lq.cpu().numpy().squeeze()
+        #     if noisy_img.ndim == 3:
+        #         noisy_img = np.transpose(noisy_img, (1, 2, 0))  # CHW to HWC
+        #         # noisy_img_for_plot = np.clip(noisy_img, 0, 1)  # float32 to uint8
+        #     denoised_img = output / 255.0 if output.max() > 1 else output  # Ensure float [0,1]
+        #     denoised_img = denoised_img[:, :, ::-1]  # BGR to RGB for plotting
+        #
+        #     fig, axs = plt.subplots(1, 3, figsize=(12, 4))
+        #     axs[0].imshow(clean_img)
+        #     axs[0].set_title('Clean Image')
+        #     axs[1].imshow(noisy_img)
+        #     axs[1].set_title('Noisy Image')
+        #     axs[2].imshow(denoised_img)
+        #     axs[2].set_title('Denoised Image')
+        #     for ax in axs:
+        #         ax.axis('off')
+        #     plt.tight_layout()
+        #     plt.show()
+        # cv2.imwrite(f'{save_dir}/{imgname}_SwinIR.png', output)
 
         # evaluate psnr/ssim/psnr_b
         if img_gt is not None:

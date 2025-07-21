@@ -45,10 +45,14 @@ GTSRB/
 
 tsr-analysis-src/
 
-SwinIR/.venv/
-SwinIR/.idea/
-SwinIR/.figs/
+#SwinIR/.venv/
+#SwinIR/.idea/
+#SwinIR/.figs/
 SwinIR/results/
-SwinIR/.vscode/
+#SwinIR/.vscode/
 SwinIR/testsets/
+
+SwinIR.zip
+SwinIR/figs/
+SwinIR/model_zoo/swinir/
 

@@ -4,41 +4,71 @@ import os
 import pandas as pd
 from PIL import Image
 
+class GTSRBTrainDataset(Dataset):
+    def __init__(self, root_dir, transform=None):
+        self.root_dir = root_dir
+        self.transform = transform
+        self.samples = []  # List of (image_path, label)
+        self.class_to_idx = {}
+        self._prepare_dataset()
+
+    def _prepare_dataset(self):
+        classes = sorted(entry.name for entry in os.scandir(self.root_dir) if entry.is_dir())
+        self.class_to_idx = {cls_name: i for i, cls_name in enumerate(classes)}
+
+        for cls in classes:
+            cls_dir = os.path.join(self.root_dir, cls)
+            for fname in os.listdir(cls_dir):
+                if fname.lower().endswith(('.png', '.jpg', '.jpeg', '.ppm')):
+                    path = os.path.join(cls_dir, fname)
+                    label = self.class_to_idx[cls]
+                    self.samples.append((path, label))
+
+    def __len__(self):
+        return len(self.samples)
+
+    def __getitem__(self, idx):
+        img_path, label = self.samples[idx]
+        image = Image.open(img_path).convert('RGB')  # convert ensures 3 channels
+
+        if self.transform:
+            image = self.transform(image)
+
+        return image, label
 
 def train_load():
-    # Define transform
     transform = transforms.Compose([
-        transforms.Resize((64, 64)), # Resizes the image to 64*64 pixels
-        transforms.ToTensor(),        # Converts PIL Image or NumPy ndarray to a PyTorch Tensor
-        # note that channels are reordered, HWC → CHW
-        # add normalization that matches the ImageNet training data.
+        transforms.Resize((64, 64)),
+        transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
                              std =[0.229, 0.224, 0.225])
     ])
 
-    # Load entire dataset
-    full_dataset = datasets.ImageFolder(root='GTSRB', transform=transform)
+    full_dataset = GTSRBTrainDataset(
+        root_dir='GTSRB/train',
+        transform=transform
+    )
 
-    # Split
     train_size = int(0.8 * len(full_dataset))
+    print(f"Train size: {train_size}")
     val_size = len(full_dataset) - train_size
 
     train_dataset, val_dataset = random_split(full_dataset, [train_size, val_size])
 
-    # Loaders
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=32)
+    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, num_workers=2)
+    val_loader = DataLoader(val_dataset, batch_size=32, num_workers=2)
 
     return train_loader, val_loader
+
 
 class GTSRBTestDataset(Dataset):
     def __init__(self, img_dir, csv_path, transform=None):
         self.img_dir = img_dir
-        self.data = pd.read_csv(csv_path)
+        self.data = pd.read_csv(csv_path, sep=';')
         self.transform = transform
 
     def __len__(self):
-        return len(self.labels_df)
+        return len(self.data)
 
     def __getitem__(self, idx):
         row = self.data.iloc[idx]
@@ -55,12 +85,14 @@ class GTSRBTestDataset(Dataset):
 def test_load():
     test_transform = transforms.Compose([
         transforms.Resize((64, 64)),
-        transforms.ToTensor()
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                             std=[0.229, 0.224, 0.225])
     ])
 
     test_dataset = GTSRBTestDataset(
         img_dir='GTSRB/test/Images',
-        csv_path='GTSRB/test/test_labels.csv',
+        csv_path='GTSRB/test/GT-final_test.csv',
         transform=test_transform
     )
 

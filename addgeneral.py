@@ -50,7 +50,7 @@ def process_directory(src_root: Path, dst_root: Path, noise_type: str, severity:
     Walk through *src_root* and store a noisy version of every image
     under the mirrored directory structure rooted at *dst_root*.
     """
-    exts = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff", ".gif"}
+    exts = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff", ".gif", ".ppm"}
     
     for class_dir in src_root.iterdir():
         if class_dir.name == ".DS_Store" or not class_dir.is_dir():
@@ -91,8 +91,8 @@ def main() -> None:
         print("Please enter a valid floating-point number.")
         return
 
-    src_root = Path("data/tsrd-train")          # original clean dataset
-    dst_root = Path(f"data/tsrd-train-{noise_type}-{severity}")    # noisy copy destination
+    src_root = Path("GTSRB/train")          # original clean dataset
+    dst_root = Path(f"GTSRB/train-{noise_type}-{severity}")    # noisy copy destination
 
     if not src_root.exists():
         print(f"Source folder not found: {src_root}")

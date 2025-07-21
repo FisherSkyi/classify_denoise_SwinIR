@@ -1,15 +1,19 @@
 import time
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import argparse
 import cv2
 import glob # path name pattern
 import numpy as np
 from collections import OrderedDict
-import os
+
 import torch
 import time
 import requests
 import matplotlib.pyplot as plt
 
+import addshapeall
 from models.network_swinir import SwinIR as net
 from utils import util_calculate_psnr_ssim as util
 
@@ -87,6 +91,7 @@ def main():
         output = (output * 255.0).round().astype(np.uint8)  # float32 to uint8
 
         if img_gt is not None:
+            # print(img_gt.s)
             clean_img = img_gt[:,:,::-1]
             noisy_img = img_lq.cpu().numpy().squeeze()
             if noisy_img.ndim == 3:
@@ -282,7 +287,9 @@ def get_image_pair(args, path):
     elif args.task in ['color_dn']:
         img_gt = cv2.imread(path, cv2.IMREAD_COLOR).astype(np.float32) / 255.
 
-        img_lq = img_gt + np.random.normal(0, args.noise / 255., img_gt.shape)
+        # img_lq = img_gt + np.random.normal(0, args.noise / 255., img_gt.shape)
+        # img_lq = np.array(addshapeall.add_random_shapes(img_gt, 0.3))
+        img_lq = np.array(addshapeall.add_random_shapes(img_gt, 0.3)).astype(np.float32) / 255.
 
     # 006 grayscale JPEG compression artifact reduction (load gt image and generate lq image on-the-fly)
     elif args.task in ['jpeg_car']:

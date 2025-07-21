@@ -22,6 +22,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--task', type=str, default='color_dn', help='classical_sr, lightweight_sr, real_sr, '
                                                                      'gray_dn, color_dn, jpeg_car, color_jpeg_car')
+    parser.add_argument('--noise_type', type=str, default='gaussian', help='gaussian, graffiti,')
     parser.add_argument('--scale', type=int, default=1, help='scale factor: 1, 2, 3, 4, 8') # 1 for dn and jpeg car
     parser.add_argument('--noise', type=int, default=15, help='noise level: 15, 25, 50')
     parser.add_argument('--jpeg', type=int, default=40, help='scale factor: 10, 20, 30, 40')
@@ -246,7 +247,7 @@ def setup(args):
 
     # 004 grayscale image denoising/ 005 color image denoising
     elif args.task in ['gray_dn', 'color_dn']:
-        save_dir = f'results/swinir_{args.task}_noise{args.noise}_{timestamp}'
+        save_dir = f'results/swinir_{args.task}_noise{args.noise}_type{args.noise_type}_{timestamp}'
         folder = args.folder_gt
         border = 0
         window_size = 8
@@ -286,10 +287,10 @@ def get_image_pair(args, path):
     # 005 color image denoising (load gt image and generate lq image on-the-fly)
     elif args.task in ['color_dn']:
         img_gt = cv2.imread(path, cv2.IMREAD_COLOR).astype(np.float32) / 255.
-
-        # img_lq = img_gt + np.random.normal(0, args.noise / 255., img_gt.shape)
-        # img_lq = np.array(addshapeall.add_random_shapes(img_gt, 0.3))
-        img_lq = np.array(addshapeall.add_random_shapes(img_gt, 0.3)).astype(np.float32) / 255.
+        if args.noise_type == 'gaussian':
+            img_lq = img_gt + np.random.normal(0, args.noise / 255., img_gt.shape)
+        elif args.noise_type == 'graffiti':
+            img_lq = np.array(addshapeall.add_random_shapes(img_gt, 0.3)).astype(np.float32) / 255.
 
     # 006 grayscale JPEG compression artifact reduction (load gt image and generate lq image on-the-fly)
     elif args.task in ['jpeg_car']:

@@ -12,8 +12,10 @@ elif torch.backends.mps.is_available():
 else:
     device = torch.device("cpu")
 
-model = resnet18(pretrained=True)
-model.fc = nn.Linear(model.fc.in_features, 43)  # GTSRB has 43 classes
+weights = ResNet18_Weights.IMAGENET1K_V1
+model = resnet18(weights = weights)
+# GTSRB has 43 classes, add a linear layer to the model
+model.fc = nn.Linear(model.fc.in_features, 43)
 model = model.to(device)
 
 criterion = nn.CrossEntropyLoss()

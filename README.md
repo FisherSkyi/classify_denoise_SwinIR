@@ -37,7 +37,10 @@ train/
 ### License-and-Acknowledgement
 
 This repository is licensed under the [Apache License 2.0](LICENSE).  
+
 It includes code from [SwinIR](https://github.com/JingyunLiang/SwinIR), which is also licensed under the Apache License 2.0. Please also follow their licenses. 
+
+It includes code from [LoRA](https://github.com/microsoft/LoRA#), which is licensed under the MIT License and adopts the Microsoft Open Source Code of Conduct. Please also follow their licenses. 
 
 It contains code for training and testing models on the [GTSRB dataset](https://benchmark.ini.rub.de/gtsrb_news.html).
 (J. Stallkamp, M. Schlipsing, J. Salmen, and C. Igel. The German Traffic Sign Recognition Benchmark: A multi-class classification competition. In Proceedings of the IEEE International Joint Conference on Neural Networks, pages 1453–1460. 2011.) 

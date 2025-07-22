@@ -31,10 +31,8 @@ class Predictor(cog.Predictor):
     def setup(self):
         model_dir = 'experiments/pretrained_models'
 
+        # a map of pretrained models for different tasks
         self.model_zoo = {
-            'real_sr': {
-                4: os.path.join(model_dir, '003_realSR_BSRGAN_DFO_s64w8_SwinIR-M_x4_GAN.pth')
-            },
             'gray_dn': {
                 15: os.path.join(model_dir, '004_grayDN_DFWB_s128w8_SwinIR-M_noise15.pth'),
                 25: os.path.join(model_dir, '004_grayDN_DFWB_s128w8_SwinIR-M_noise25.pth'),
@@ -44,16 +42,11 @@ class Predictor(cog.Predictor):
                 15: os.path.join(model_dir, '005_colorDN_DFWB_s128w8_SwinIR-M_noise15.pth'),
                 25: os.path.join(model_dir, '005_colorDN_DFWB_s128w8_SwinIR-M_noise25.pth'),
                 50: os.path.join(model_dir, '005_colorDN_DFWB_s128w8_SwinIR-M_noise50.pth')
-            },
-            'jpeg_car': {
-                10: os.path.join(model_dir, '006_CAR_DFWB_s126w7_SwinIR-M_jpeg10.pth'),
-                20: os.path.join(model_dir, '006_CAR_DFWB_s126w7_SwinIR-M_jpeg20.pth'),
-                30: os.path.join(model_dir, '006_CAR_DFWB_s126w7_SwinIR-M_jpeg30.pth'),
-                40: os.path.join(model_dir, '006_CAR_DFWB_s126w7_SwinIR-M_jpeg40.pth')
             }
         }
 
         parser = argparse.ArgumentParser()
+        # build a default argument parser
         parser.add_argument('--task', type=str, default='real_sr', help='classical_sr, lightweight_sr, real_sr, '
                                                                         'gray_dn, color_dn, jpeg_car')
         parser.add_argument('--scale', type=int, default=1, help='scale factor: 1, 2, 3, 4, 8')  # 1 for dn and jpeg car
@@ -65,19 +58,20 @@ class Predictor(cog.Predictor):
         parser.add_argument('--large_model', action='store_true',
                             help='use large model, only provided for real image sr')
         parser.add_argument('--model_path', type=str,
-                            default=self.model_zoo['real_sr'][4])
+                            default=self.model_zoo['color_dn'][0])
         parser.add_argument('--folder_lq', type=str, default=None, help='input low-quality test image folder')
         parser.add_argument('--folder_gt', type=str, default=None, help='input ground-truth test image folder')
 
         self.args = parser.parse_args('')
 
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device("cuda" if torch.cuda.is_available() else
+                              "mps" if torch.backends.mps.is_available() else "cpu")
 
         self.tasks = {
-            'Real-World Image Super-Resolution': 'real_sr',
-            'Grayscale Image Denoising': 'gray_dn',
-            'Color Image Denoising': 'color_dn',
-            'JPEG Compression Artifact Reduction': 'jpeg_car'
+            "Real-World Image Super-Resolution": "real_sr",
+            "Grayscale Image Denoising": "gray_dn",
+            "Color Image Denoising": "color_dn",
+            "JPEG Compression Artifact Reduction": "jpeg_car"
         }
 
     @cog.input("image", type=Path, help="input image")
@@ -91,20 +85,19 @@ class Predictor(cog.Predictor):
     @cog.input("jpeg", type=int, default=40, options=[10, 20, 30, 40],
                help='scale factor, activated for JPEG Compression Artifact Reduction. '
                     'Leave it as default or arbitrary if other tasks are selected')
-    def predict(self, image, task_type='Real-World Image Super-Resolution', jpeg=40, noise=15):
+
+    def predict(self, image, task_type='Color Image Denoising', jpeg=40, noise=15):
 
         self.args.task = self.tasks[task_type]
         self.args.noise = noise
         self.args.jpeg = jpeg
 
         # set model path
-        if self.args.task == 'real_sr':
-            self.args.scale = 4
-            self.args.model_path = self.model_zoo[self.args.task][4]
-        elif self.args.task in ['gray_dn', 'color_dn']:
+
+        if self.args.task in ['gray_dn', 'color_dn']:
             self.args.model_path = self.model_zoo[self.args.task][noise]
-        else:
-            self.args.model_path = self.model_zoo[self.args.task][jpeg]
+        if self.args.task in ['jpeg_car']:
+            self.args.model_path = self.model_zoo[self.args.task][noise]
 
         try:
             # set input folder
@@ -112,10 +105,8 @@ class Predictor(cog.Predictor):
             os.makedirs(input_dir, exist_ok=True)
             input_path = os.path.join(input_dir, os.path.basename(image))
             shutil.copy(str(image), input_path)
-            if self.args.task == 'real_sr':
-                self.args.folder_lq = input_dir
-            else:
-                self.args.folder_gt = input_dir
+
+            self.args.folder_gt = input_dir
 
             model = define_model(self.args)
             model.eval()
@@ -125,6 +116,8 @@ class Predictor(cog.Predictor):
             folder, save_dir, border, window_size = setup(self.args)
             os.makedirs(save_dir, exist_ok=True)
             test_results = OrderedDict()
+            # PSNR (Peak Signal-to-Noise Ratio) measures the difference between two images based on pixel-by-pixel calculations
+            # SSIM (Structural Similarity Index) considers factors like luminance, contrast, and structure to better reflect human perception of image quality.
             test_results['psnr'] = []
             test_results['ssim'] = []
             test_results['psnr_y'] = []

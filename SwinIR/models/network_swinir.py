@@ -24,6 +24,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.checkpoint as checkpoint
 # from timm.layers import DropPath, to_2tuple, trunc_normal_
+import LoRA.loralib as lora
+
 try:
     from timm.layers import DropPath, to_2tuple, trunc_normal_
 except ImportError:
@@ -83,9 +85,9 @@ class Mlp(nn.Module):
         super().__init__()
         out_features = out_features or in_features
         hidden_features = hidden_features or in_features
-        self.fc1 = nn.Linear(in_features, hidden_features)
+        self.fc1 = lora.Linear(in_features, hidden_features, r=16)
         self.act = act_layer()
-        self.fc2 = nn.Linear(hidden_features, out_features)
+        self.fc2 = lora.Linear(hidden_features, out_features, r=16)
         self.drop = nn.Dropout(drop)
 
     def forward(self, x):
@@ -159,7 +161,7 @@ class WindowAttention(nn.Module):
         # get pair-wise relative position index for each token inside the window
         coords_h = torch.arange(self.window_size[0])
         coords_w = torch.arange(self.window_size[1])
-        coords = torch.stack(torch.meshgrid([coords_h, coords_w]))  # 2, Wh, Ww
+        coords = torch.stack(torch.meshgrid([coords_h, coords_w], indexing='ij'))  # 2, Wh, Ww
         coords_flatten = torch.flatten(coords, 1)  # 2, Wh*Ww
         relative_coords = coords_flatten[:, :, None] - coords_flatten[:, None, :]  # 2, Wh*Ww, Wh*Ww
         relative_coords = relative_coords.permute(1, 2, 0).contiguous()  # Wh*Ww, Wh*Ww, 2
@@ -169,9 +171,9 @@ class WindowAttention(nn.Module):
         relative_position_index = relative_coords.sum(-1)  # Wh*Ww, Wh*Ww
         self.register_buffer("relative_position_index", relative_position_index)
 
-        self.qkv = nn.Linear(dim, dim * 3, bias=qkv_bias)
+        self.qkv = lora.Linear(dim, dim * 3, bias=qkv_bias, r=16)
         self.attn_drop = nn.Dropout(attn_drop)
-        self.proj = nn.Linear(dim, dim)
+        self.proj = lora.Linear(dim, dim, r=16)
 
         self.proj_drop = nn.Dropout(proj_drop)
 
@@ -304,6 +306,9 @@ class SwinTransformerBlock(nn.Module):
         return attn_mask
 
     def forward(self, x, x_size):
+        if isinstance(x_size, torch.Tensor):
+            x_size = tuple(x_size.tolist())
+
         H, W = x_size
         B, L, C = x.shape
         # assert L == H * W, "input feature has wrong size"
@@ -377,7 +382,7 @@ class PatchMerging(nn.Module):
         super().__init__()
         self.input_resolution = input_resolution
         self.dim = dim
-        self.reduction = nn.Linear(4 * dim, 2 * dim, bias=False)
+        self.reduction = lora.Linear(4 * dim, 2 * dim, bias=False, r=16)
         self.norm = norm_layer(4 * dim)
 
     def forward(self, x):
@@ -529,13 +534,14 @@ class RSTB(nn.Module):
                                          use_checkpoint=use_checkpoint)
 
         if resi_connection == '1conv':
-            self.conv = nn.Conv2d(dim, dim, 3, 1, 1)
+            self.conv = lora.Conv2d(dim, dim, kernel_size=3, stride=1, padding=1, r=16)
         elif resi_connection == '3conv':
             # to save parameters and memory
-            self.conv = nn.Sequential(nn.Conv2d(dim, dim // 4, 3, 1, 1), nn.LeakyReLU(negative_slope=0.2, inplace=True),
-                                      nn.Conv2d(dim // 4, dim // 4, 1, 1, 0),
+            self.conv = nn.Sequential(lora.Conv2d(dim, dim // 4, kernel_size=3, stride=1, padding=1, r=16),
                                       nn.LeakyReLU(negative_slope=0.2, inplace=True),
-                                      nn.Conv2d(dim // 4, dim, 3, 1, 1))
+                                      lora.Conv2d(dim // 4, dim // 4, kernel_size=1, stride=1, padding=0, r=16),
+                                      nn.LeakyReLU(negative_slope=0.2, inplace=True),
+                                      lora.Conv2d(dim // 4, dim, kernel_size=3, stride=1, padding=1, r=16))
 
         self.patch_embed = PatchEmbed(
             img_size=img_size, patch_size=patch_size, in_chans=0, embed_dim=dim,
@@ -570,7 +576,7 @@ class PatchEmbed(nn.Module):
         norm_layer (nn.Module, optional): Normalization layer. Default: None
     """
 
-    def __init__(self, img_size=224, patch_size=4, in_chans=3, embed_dim=96, norm_layer=None):
+    def __init__(self, img_size=128, patch_size=4, in_chans=3, embed_dim=96, norm_layer=None):
         super().__init__()
         img_size = to_2tuple(img_size)
         patch_size = to_2tuple(patch_size)
@@ -613,7 +619,7 @@ class PatchUnEmbed(nn.Module):
         norm_layer (nn.Module, optional): Normalization layer. Default: None
     """
 
-    def __init__(self, img_size=224, patch_size=4, in_chans=3, embed_dim=96, norm_layer=None):
+    def __init__(self, img_size=128, patch_size=4, in_chans=3, embed_dim=96, norm_layer=None):
         super().__init__()
         img_size = to_2tuple(img_size)
         patch_size = to_2tuple(patch_size)
@@ -648,10 +654,10 @@ class Upsample(nn.Sequential):
         m = []
         if (scale & (scale - 1)) == 0:  # scale = 2^n
             for _ in range(int(math.log(scale, 2))):
-                m.append(nn.Conv2d(num_feat, 4 * num_feat, 3, 1, 1))
+                m.append(lora.Conv2d(num_feat, 4 * num_feat, kernel_size=3, stride=1, padding=1, r=16))
                 m.append(nn.PixelShuffle(2))
         elif scale == 3:
-            m.append(nn.Conv2d(num_feat, 9 * num_feat, 3, 1, 1))
+            m.append(lora.Conv2d(num_feat, 9 * num_feat, kernel_size=3, stride=1, padding=1, r=16))
             m.append(nn.PixelShuffle(3))
         else:
             raise ValueError(f'scale {scale} is not supported. ' 'Supported scales: 2^n and 3.')
@@ -672,7 +678,7 @@ class UpsampleOneStep(nn.Sequential):
         self.num_feat = num_feat
         self.input_resolution = input_resolution
         m = []
-        m.append(nn.Conv2d(num_feat, (scale ** 2) * num_out_ch, 3, 1, 1))
+        m.append(lora.Conv2d(num_feat, (scale ** 2) * num_out_ch, kernel_size=3, stride=1, padding=1, r=16))
         m.append(nn.PixelShuffle(scale))
         super(UpsampleOneStep, self).__init__(*m)
 
@@ -733,7 +739,7 @@ class SwinIR(nn.Module):
 
         #####################################################################################################
         ################################### 1, shallow feature extraction ###################################
-        self.conv_first = nn.Conv2d(num_in_ch, embed_dim, 3, 1, 1)
+        self.conv_first = lora.Conv2d(num_in_ch, embed_dim, kernel_size=3, stride=1, padding=1, dilation=1, r=16)
 
         #####################################################################################################
         ################################### 2, deep feature extraction ######################################
@@ -793,47 +799,92 @@ class SwinIR(nn.Module):
 
         # build the last conv layer in deep feature extraction
         if resi_connection == '1conv':
-            self.conv_after_body = nn.Conv2d(embed_dim, embed_dim, 3, 1, 1)
+            self.conv_after_body = lora.Conv2d(
+                in_channels=embed_dim,
+                out_channels=embed_dim,
+                kernel_size=3,
+                stride=1,
+                padding=1,  # explicit
+                bias=True,
+                r=16  # LoRA rank
+            )
         elif resi_connection == '3conv':
             # to save parameters and memory
-            self.conv_after_body = nn.Sequential(nn.Conv2d(embed_dim, embed_dim // 4, 3, 1, 1),
-                                                 nn.LeakyReLU(negative_slope=0.2, inplace=True),
-                                                 nn.Conv2d(embed_dim // 4, embed_dim // 4, 1, 1, 0),
-                                                 nn.LeakyReLU(negative_slope=0.2, inplace=True),
-                                                 nn.Conv2d(embed_dim // 4, embed_dim, 3, 1, 1))
+            # nn.Conv2d parameters:
+            # in_channels
+            # out_channels
+            # kernel_size
+            # stride
+            # padding
+            # dilation
+            # groups
+            # bias
+            # padding_mode
+
+            self.conv_after_body = nn.Sequential(
+                lora.Conv2d(
+                    in_channels=embed_dim,
+                    out_channels=embed_dim // 4,
+                    kernel_size=3,
+                    stride=1,
+                    padding=1,  # explicit
+                    bias=True,
+                    r=16  # LoRA rank
+                ),
+                nn.LeakyReLU(negative_slope=0.2, inplace=True),
+                lora.Conv2d(
+                    in_channels=embed_dim // 4,
+                    out_channels=embed_dim // 4,
+                    kernel_size=1,
+                    stride=1,
+                    padding=0,  # explicit
+                    bias=True,
+                    r=16  # LoRA rank
+                ),
+                nn.LeakyReLU(negative_slope=0.2, inplace=True),
+                lora.Conv2d(
+                    in_channels=embed_dim // 4,
+                    out_channels=embed_dim,
+                    kernel_size=3,
+                    stride=1,
+                    padding=1,  # explicit
+                    bias=True,
+                    r=16  # LoRA rank
+                ))
+
 
         #####################################################################################################
         ################################ 3, high quality image reconstruction ################################
         if self.upsampler == 'pixelshuffle':
             # for classical SR
-            self.conv_before_upsample = nn.Sequential(nn.Conv2d(embed_dim, num_feat, 3, 1, 1),
+            self.conv_before_upsample = nn.Sequential(lora.Conv2d(embed_dim, num_feat, kernel_size=3, stride=1, padding=1, r=16),
                                                       nn.LeakyReLU(inplace=True))
             self.upsample = Upsample(upscale, num_feat)
-            self.conv_last = nn.Conv2d(num_feat, num_out_ch, 3, 1, 1)
+            self.conv_last = lora.Conv2d(num_feat, num_out_ch, kernel_size=3, stride=1, padding=1, r=16)
         elif self.upsampler == 'pixelshuffledirect':
             # for lightweight SR (to save parameters)
             self.upsample = UpsampleOneStep(upscale, embed_dim, num_out_ch,
                                             (patches_resolution[0], patches_resolution[1]))
         elif self.upsampler == 'nearest+conv':
             # for real-world SR (less artifacts)
-            self.conv_before_upsample = nn.Sequential(nn.Conv2d(embed_dim, num_feat, 3, 1, 1),
+            self.conv_before_upsample = nn.Sequential(lora.Conv2d(embed_dim, num_feat, kernel_size=3, stride=1, padding=1, r=16),
                                                       nn.LeakyReLU(inplace=True))
-            self.conv_up1 = nn.Conv2d(num_feat, num_feat, 3, 1, 1)
+            self.conv_up1 = lora.Conv2d(num_feat, num_feat, kernel_size=3, stride=1, padding=1, r=16)
             if self.upscale == 4:
-                self.conv_up2 = nn.Conv2d(num_feat, num_feat, 3, 1, 1)
-            self.conv_hr = nn.Conv2d(num_feat, num_feat, 3, 1, 1)
-            self.conv_last = nn.Conv2d(num_feat, num_out_ch, 3, 1, 1)
+                self.conv_up2 = lora.Conv2d(num_feat, num_feat, kernel_size=3, stride=1, padding=1, r=16)
+            self.conv_hr = lora.Conv2d(num_feat, num_feat, kernel_size=3, stride=1, padding=1, r=16)
+            self.conv_last = lora.Conv2d(num_feat, num_out_ch, kernel_size=3, stride=1, padding=1, r=16)
             self.lrelu = nn.LeakyReLU(negative_slope=0.2, inplace=True)
         else:
             # for image denoising and JPEG compression artifact reduction
-            self.conv_last = nn.Conv2d(embed_dim, num_out_ch, 3, 1, 1)
+            self.conv_last = lora.Conv2d(embed_dim, num_out_ch, kernel_size=3, stride=1, padding=1, r=16)
 
         self.apply(self._init_weights)
 
     def _init_weights(self, m):
-        if isinstance(m, nn.Linear):
+        if isinstance(m, lora.Linear):
             trunc_normal_(m.weight, std=.02)
-            if isinstance(m, nn.Linear) and m.bias is not None:
+            if isinstance(m, lora.Linear) and m.bias is not None:
                 nn.init.constant_(m.bias, 0)
         elif isinstance(m, nn.LayerNorm):
             nn.init.constant_(m.bias, 0)

@@ -5,7 +5,7 @@
 
 ---
 
-This repository is the official PyTorch implementation of our paper *Road Sign Classification with Denoising Pipeline Approach*
+This repository is the PyTorch implementation of our idea: *Road Sign Classification with Denoising Pipeline Approach*
 
 #### Contents
 1. [Dataset](#Dataset)

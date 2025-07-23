@@ -14,10 +14,12 @@ echo "Array Index: $SLURM_ARRAY_TASK_ID"
 echo "================================================="
 
 # Activate Python virtual environment
-source /adv_noise/.venv/bin/activate
+source /home/y/yuletian/adv_denoise_SwinIR/.venv/bin/activate
 
 # Change to the directory from which the job was submitted
 cd "${SLURM_SUBMIT_DIR}"
+
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 # Run training script
 python train_gtsrb_lora.py

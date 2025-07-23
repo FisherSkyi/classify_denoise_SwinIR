@@ -8,6 +8,17 @@
 #SBATCH --mail-user=yuletian@u.nus.edu
 #SBATCH --mail-type=END,FAIL
 
+gpu_id=$(nvidia-smi --query-gpu=memory.free,index --format=csv,noheader,nounits \
+         | awk '$1 > 1024 {print $2; exit}')
+
+if [ -z "$gpu_id" ]; then
+  echo "No GPU with >1GB free memory found."
+  exit 1
+fi
+
+echo "Using GPU $gpu_id"
+export CUDA_VISIBLE_DEVICES=$gpu_id
+
 echo "================================================="
 echo "Running job on host: $(hostname)"
 echo "Array Index: $SLURM_ARRAY_TASK_ID"

@@ -43,7 +43,7 @@ def test(model_path: str):
         print(f"Test accuracy: {correct / total:.4f}")
 
     elif model_path == "simplecnn_gtsrb.pth":
-        model = SimpleCNN(num_classes=43)  # 👈 use your CNN here
+        model = SimpleCNN(num_classes=43)
         model.load_state_dict(torch.load(model_path, map_location=device))
         model.to(device)
         model.eval()

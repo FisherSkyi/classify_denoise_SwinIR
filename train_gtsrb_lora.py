@@ -96,7 +96,7 @@ backbone = SwinIR(
 
 # NOTE: SwinIR pretrained models often store weights under a 'params' key.
 # Load the state dictionary.
-pretrained_model = torch.load('SwinIR/model_zoo/swinir/005_colorDN_DFWB_s128w8_SwinIR-M_noise15.pth')
+pretrained_model = torch.load('SwinIR/model_zoo/swinir/net_Q_3300.pth')
 if 'params' in pretrained_model:
     pretrained_state_dict = pretrained_model['params']
 else:

@@ -55,8 +55,8 @@ def train_load():
 
     train_dataset, val_dataset = random_split(full_dataset, [train_size, val_size])
 
-    train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True, num_workers=2)
-    val_loader = DataLoader(val_dataset, batch_size=8, num_workers=2)
+    train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True, num_workers=2, pin_memory=False)
+    val_loader = DataLoader(val_dataset, batch_size=8, num_workers=2, pin_memory=False)
 
     return train_loader, val_loader
 
@@ -96,6 +96,6 @@ def test_load():
         transform=test_transform
     )
 
-    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False, pin_memory=False)
 
     return test_loader

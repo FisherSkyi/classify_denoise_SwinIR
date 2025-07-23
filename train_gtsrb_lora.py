@@ -9,8 +9,28 @@ from tqdm import tqdm
 import load
 import LoRA.loralib as lora
 from SwinIR.models.network_swinir import SwinIR
-# import wandb
-# wandb.init(project="swinir-gtsrb", config={"lr": lr, "beta": beta})
+import wandb
+from wandb.sdk.wandb_settings import Settings
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--lr", type=float, default=1e-4, help="Learning rate")
+parser.add_argument('--epochs', type=int, default=5)
+parser.add_argument('--batch_size', type=int, default=64)
+# parser.add_argument("--beta", type=float, default=0.1, help="Beta value")
+args = parser.parse_args()
+lr = args.lr
+wandb.init(
+    project="swinir-gtsrb",
+    name="swinir-lora",
+    config={
+        "lr": lr,
+        "epochs": args.epochs,
+        "architecture": "SwinIR + LoRA",
+        "backbone": "SwinIR-M_noise15",
+    },
+    settings=Settings(init_timeout=120)
+)
 
 if torch.cuda.is_available():
     device = torch.device("cuda")
@@ -105,7 +125,7 @@ def train(model, loader, optimizer, criterion):
     model.train()
     running_loss, correct, total = 0.0, 0, 0
 
-    for inputs, labels in tqdm(loader, desc="Training", leave=False):
+    for batch_idx, (inputs, labels) in enumerate(tqdm(loader, desc="Training", leave=False)):
         inputs, labels = inputs.to(device), labels.to(device)
         optimizer.zero_grad()
         # inputs = pad_to_window_size(inputs, window_size=8)
@@ -123,6 +143,13 @@ def train(model, loader, optimizer, criterion):
         correct += (preds == labels).sum().item()
         total += labels.size(0)
 
+        wandb.log({
+            "batch_train_loss": loss.item(),
+            "batch_train_acc": (preds == labels).float().mean().item(),
+            "batch_idx": batch_idx
+        })
+
+
     return running_loss / total, correct / total
 
 def validate(model, loader, criterion):
@@ -130,7 +157,7 @@ def validate(model, loader, criterion):
     running_loss, correct, total = 0.0, 0, 0
 
     with torch.no_grad():
-        for inputs, labels in tqdm(loader, desc="Validating", leave=False):
+        for batch_idx, (inputs, labels) in enumerate(tqdm(loader, desc="Training", leave=False)):
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
             loss = criterion(outputs, labels)
@@ -139,6 +166,12 @@ def validate(model, loader, criterion):
             _, preds = torch.max(outputs, 1)
             correct += (preds == labels).sum().item()
             total += labels.size(0)
+
+            wandb.log({
+                "batch_val_loss": loss.item(),
+                "batch_val_acc": (preds == labels).float().mean().item(),
+                "val_batch_idx": batch_idx
+            })
 
     return running_loss / total, correct / total
 
@@ -156,6 +189,7 @@ def main():
         # wandb.log({"train_loss": train_loss, "train_acc": train_acc, "epoch": epoch})
 
     torch.save(lora.lora_state_dict(model), 'swinir_gtsrb_lora.pth')
+    wandb.finish()
 
 
 if __name__ == "__main__":

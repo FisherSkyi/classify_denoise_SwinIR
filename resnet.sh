@@ -29,4 +29,4 @@ lr=${learning_rates[$SLURM_ARRAY_TASK_ID]}
 echo "Using learning rate: $lr"
 
 # Train with fixed batch size (e.g. 64)
-python train_resnet.py --lr $lr --epochs 10 --batch_size 64
+python train_resnet.py --lr $lr --epochs 50 --batch_size 64

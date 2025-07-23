@@ -113,13 +113,7 @@ lora.mark_only_lora_as_trainable(model)
 model.to(device)
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=1e-4)
-
-# def pad_to_window_size(img, window_size):
-#     _, _, h, w = img.shape
-#     pad_h = (window_size - h % window_size) % window_size
-#     pad_w = (window_size - w % window_size) % window_size
-#     return torch.nn.functional.pad(img, (0, pad_w, 0, pad_h), mode='reflect')
+optimizer = optim.Adam(model.parameters(), lr=4e-3)
 
 def train(model, loader, optimizer, criterion):
     model.train()
@@ -128,7 +122,6 @@ def train(model, loader, optimizer, criterion):
     for batch_idx, (inputs, labels) in enumerate(tqdm(loader, desc="Training", leave=False)):
         inputs, labels = inputs.to(device), labels.to(device)
         optimizer.zero_grad()
-        # inputs = pad_to_window_size(inputs, window_size=8)
         outputs = model(inputs)
         loss = criterion(outputs, labels)
         loss.backward()
@@ -186,7 +179,6 @@ def main():
         print(f"Epoch {epoch + 1}/{num_epochs}")
         print(f"  Train loss: {train_loss:.4f}, acc: {train_acc:.4f}")
         print(f"  Val   loss: {val_loss:.4f}, acc: {val_acc:.4f}")
-        # wandb.log({"train_loss": train_loss, "train_acc": train_acc, "epoch": epoch})
 
     torch.save(lora.lora_state_dict(model), 'swinir_gtsrb_lora.pth')
     wandb.finish()

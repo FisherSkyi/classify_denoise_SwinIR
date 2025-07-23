@@ -104,7 +104,7 @@ def main():
         print(f"  Val   loss: {val_loss:.4f}, acc: {val_acc:.4f}")
 
     torch.save(model.state_dict(), "resnet18_gtsrb.pth")
-
+    wandb.finish()
 
 if __name__ == "__main__":
     main()

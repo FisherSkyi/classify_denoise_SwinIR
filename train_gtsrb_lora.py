@@ -12,8 +12,8 @@ from SwinIR.models.network_swinir import SwinIR
 
 if torch.cuda.is_available():
     device = torch.device("cuda")
-elif torch.backends.mps.is_available():
-    device = torch.device("mps")
+# elif torch.backends.mps.is_available():
+#     device = torch.device("mps")
 else:
     device = torch.device("cpu")
 
@@ -110,9 +110,11 @@ def train(model, loader, optimizer, criterion):
         outputs = model(inputs)
         loss = criterion(outputs, labels)
         loss.backward()
-        torch.mps.empty_cache()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
         optimizer.step()
-        torch.mps.empty_cache()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
         running_loss += loss.item() * inputs.size(0)
         _, preds = torch.max(outputs, 1)

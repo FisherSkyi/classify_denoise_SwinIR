@@ -4,6 +4,28 @@ import torch.optim as optim
 from torchvision.models import resnet18, ResNet18_Weights
 from tqdm import tqdm
 import load
+import wandb
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--lr", type=float, default=1e-4, help="Learning rate")
+parser.add_argument('--epochs', type=int, default=5)
+parser.add_argument('--batch_size', type=int, default=64)
+# parser.add_argument("--beta", type=float, default=0.1, help="Beta value")
+args = parser.parse_args()
+lr = args.lr
+
+wandb.init(
+    project="resnet-gtsrb",  # your W&B project name
+    name=f"clean-lr{lr}",  # optional: good for Slurm sweeps
+    config={
+        "learning_rate": lr,
+        "epochs": args.epochs,
+        "batch_size": args.batch_size,
+        "architecture": "resnet18",
+    }
+)
 
 if torch.cuda.is_available():
     device = torch.device("cuda")
@@ -19,7 +41,7 @@ model.fc = nn.Linear(model.fc.in_features, 43)
 model = model.to(device)
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=1e-4)
+optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
 def train(model, loader, optimizer, criterion):
     model.train()
@@ -61,7 +83,6 @@ def validate(model, loader, criterion):
 def main():
     train_loader, val_loader = load.train_load()
     num_epochs = 10
-
     for epoch in range(num_epochs):
         train_loss, train_acc = train(model, train_loader, optimizer, criterion)
         val_loss, val_acc = validate(model, val_loader, criterion)
@@ -69,6 +90,13 @@ def main():
         print(f"Epoch {epoch + 1}/{num_epochs}")
         print(f"  Train loss: {train_loss:.4f}, acc: {train_acc:.4f}")
         print(f"  Val   loss: {val_loss:.4f}, acc: {val_acc:.4f}")
+        wandb.log({
+            "epoch": epoch + 1,
+            "train_loss": train_loss,
+            "train_acc": train_acc,
+            "val_loss": val_loss,
+            "val_acc": val_acc
+        })
 
     torch.save(model.state_dict(), "resnet18_gtsrb.pth")
 

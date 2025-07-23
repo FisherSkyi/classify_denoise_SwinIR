@@ -9,6 +9,8 @@ from tqdm import tqdm
 import load
 import LoRA.loralib as lora
 from SwinIR.models.network_swinir import SwinIR
+# import wandb
+# wandb.init(project="swinir-gtsrb", config={"lr": lr, "beta": beta})
 
 if torch.cuda.is_available():
     device = torch.device("cuda")
@@ -151,6 +153,7 @@ def main():
         print(f"Epoch {epoch + 1}/{num_epochs}")
         print(f"  Train loss: {train_loss:.4f}, acc: {train_acc:.4f}")
         print(f"  Val   loss: {val_loss:.4f}, acc: {val_acc:.4f}")
+        # wandb.log({"train_loss": train_loss, "train_acc": train_acc, "epoch": epoch})
 
     torch.save(lora.lora_state_dict(model), 'swinir_gtsrb_lora.pth')
 

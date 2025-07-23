@@ -47,7 +47,7 @@ def train(model, loader, optimizer, criterion):
     model.train()
     running_loss, correct, total = 0.0, 0, 0
 
-    for inputs, labels in tqdm(loader, desc="Training", leave=False):
+    for batch_idx, (inputs, labels) in enumerate(tqdm(loader, desc="Training", leave=False)):
         inputs, labels = inputs.to(device), labels.to(device)
         optimizer.zero_grad()
 
@@ -61,6 +61,12 @@ def train(model, loader, optimizer, criterion):
         correct += (preds == labels).sum().item()
         total += labels.size(0)
 
+        wandb.log({
+            "batch_train_loss": loss.item(),
+            "batch_train_acc": (preds == labels).float().mean().item(),
+            "batch_idx": batch_idx
+        })
+
     return running_loss / total, correct / total
 
 def validate(model, loader, criterion):
@@ -68,7 +74,7 @@ def validate(model, loader, criterion):
     running_loss, correct, total = 0.0, 0, 0
 
     with torch.no_grad():
-        for inputs, labels in tqdm(loader, desc="Validating", leave=False):
+        for batch_idx, (inputs, labels) in enumerate(tqdm(loader, desc="Validating", leave=False)):
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
             loss = criterion(outputs, labels)
@@ -77,6 +83,12 @@ def validate(model, loader, criterion):
             _, preds = torch.max(outputs, 1)
             correct += (preds == labels).sum().item()
             total += labels.size(0)
+
+            wandb.log({
+                "batch_val_loss": loss.item(),
+                "batch_val_acc": (preds == labels).float().mean().item(),
+                "val_batch_idx": batch_idx
+            })
 
     return running_loss / total, correct / total
 
@@ -90,13 +102,6 @@ def main():
         print(f"Epoch {epoch + 1}/{num_epochs}")
         print(f"  Train loss: {train_loss:.4f}, acc: {train_acc:.4f}")
         print(f"  Val   loss: {val_loss:.4f}, acc: {val_acc:.4f}")
-        wandb.log({
-            "epoch": epoch + 1,
-            "train_loss": train_loss,
-            "train_acc": train_acc,
-            "val_loss": val_loss,
-            "val_acc": val_acc
-        })
 
     torch.save(model.state_dict(), "resnet18_gtsrb.pth")
 

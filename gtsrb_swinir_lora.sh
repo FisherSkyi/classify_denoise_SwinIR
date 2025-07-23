@@ -22,4 +22,4 @@ cd "${SLURM_SUBMIT_DIR}"
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 # Run training script
-python train_gtsrb_lora.py
+python train_gtsrb_lora.py --lr 1e-3 --epochs 5 --batch_size 32

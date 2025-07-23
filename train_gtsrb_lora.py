@@ -14,9 +14,9 @@ from wandb.sdk.wandb_settings import Settings
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--lr", type=float, default=1e-4, help="Learning rate")
+parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate")
 parser.add_argument('--epochs', type=int, default=5)
-parser.add_argument('--batch_size', type=int, default=64)
+parser.add_argument('--batch_size', type=int, default=32)
 # parser.add_argument("--beta", type=float, default=0.1, help="Beta value")
 args = parser.parse_args()
 lr = args.lr
@@ -34,8 +34,6 @@ wandb.init(
 
 if torch.cuda.is_available():
     device = torch.device("cuda")
-# elif torch.backends.mps.is_available():
-#     device = torch.device("mps")
 else:
     device = torch.device("cpu")
 
@@ -106,8 +104,6 @@ else:
 
 backbone.load_state_dict(pretrained_state_dict, strict=False)
 
-# backbone.load_state_dict(pretrained_model, strict=False)
-
 model = SwinIRClassifier(backbone, num_classes=43)
 lora.mark_only_lora_as_trainable(model)
 model.to(device)
@@ -136,11 +132,11 @@ def train(model, loader, optimizer, criterion):
         correct += (preds == labels).sum().item()
         total += labels.size(0)
 
-        wandb.log({
-            "batch_train_loss": loss.item(),
-            "batch_train_acc": (preds == labels).float().mean().item(),
-            "batch_idx": batch_idx
-        })
+        # wandb.log({
+        #     "batch_train_loss": loss.item(),
+        #     "batch_train_acc": (preds == labels).float().mean().item(),
+        #     "batch_idx": batch_idx
+        # })
 
 
     return running_loss / total, correct / total
@@ -160,11 +156,11 @@ def validate(model, loader, criterion):
             correct += (preds == labels).sum().item()
             total += labels.size(0)
 
-            wandb.log({
-                "batch_val_loss": loss.item(),
-                "batch_val_acc": (preds == labels).float().mean().item(),
-                "val_batch_idx": batch_idx
-            })
+            # wandb.log({
+            #     "batch_val_loss": loss.item(),
+            #     "batch_val_acc": (preds == labels).float().mean().item(),
+            #     "val_batch_idx": batch_idx
+            # })
 
     return running_loss / total, correct / total
 
@@ -179,6 +175,14 @@ def main():
         print(f"Epoch {epoch + 1}/{num_epochs}")
         print(f"  Train loss: {train_loss:.4f}, acc: {train_acc:.4f}")
         print(f"  Val   loss: {val_loss:.4f}, acc: {val_acc:.4f}")
+
+        wandb.log({
+            "epoch": epoch + 1,
+            "train_loss": train_loss,
+            "train_acc": train_acc,
+            "val_loss": val_loss,
+            "val_acc": val_acc,
+        }, step=epoch)
 
     torch.save(lora.lora_state_dict(model), 'swinir_gtsrb_lora.pth')
     wandb.finish()

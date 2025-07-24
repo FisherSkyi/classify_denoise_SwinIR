@@ -22,6 +22,12 @@ elif torch.backends.mps.is_available():
 else:
     device = torch.device("cpu")
 
+
+print(torch.cuda.is_available())
+print(torch.cuda.device_count())
+print(torch.cuda.current_device())
+print(torch.cuda.device(0))
+print(torch.cuda.get_device_name(0))
 weights = ResNet18_Weights.IMAGENET1K_V1
 model = resnet18(weights=weights)
 model.fc = nn.Linear(model.fc.in_features, 43)
@@ -90,7 +96,7 @@ def main():
         print(f"  Val   loss: {val_loss:.4f}, acc: {val_acc:.4f}")
     
     torch.save(model.state_dict(), "resnet18_gtsrb.pth")
-    wandb.finish()
+
 
 if __name__ == "__main__":
     main()

@@ -63,7 +63,7 @@ def test(model_path: str):
 
 
 def main():
-    model_path = "simplecnn_gtsrb.pth"  # Path to the saved model
+    model_path = "resnet18_gtsrb.pth"  # Path to the saved model
     test(model_path)
 
 if __name__ == "__main__":

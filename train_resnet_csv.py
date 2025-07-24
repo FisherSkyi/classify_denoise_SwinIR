@@ -97,6 +97,5 @@ def main():
     
     torch.save(model.state_dict(), "resnet18_gtsrb.pth")
 
-
 if __name__ == "__main__":
     main()

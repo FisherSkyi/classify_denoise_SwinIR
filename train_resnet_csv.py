@@ -58,10 +58,10 @@ def validate(model, loader, criterion):
     return running_loss / total, correct / total
 
 def main():
-    print(torch.cuda.is_available())
-    print(torch.cuda.device_count())
-    print(torch.cuda.current_device())
-    print(torch.cuda.device(0))
+    # print(torch.cuda.is_available())
+    # print(torch.cuda.device_count())
+    # print(torch.cuda.current_device())
+    # print(torch.cuda.device(0))
     print(torch.cuda.get_device_name(0))
 
     weights = ResNet18_Weights.IMAGENET1K_V1
@@ -78,8 +78,7 @@ def main():
     # Write CSV header if file doesn't exist
     with open(csv_file, 'w', newline='') as f:
         writer = csv.writer(f)
-        if not file_exists:
-            writer.writerow(['Epoch', 'Train_Loss', 'Train_Accuracy', 'Val_Loss', 'Val_Accuracy'])
+        writer.writerow(['Epoch', 'Train_Loss', 'Train_Accuracy', 'Val_Loss', 'Val_Accuracy'])
 
     for epoch in range(num_epochs):
         train_loss, train_acc = train(model, train_loader, optimizer, criterion)

@@ -22,20 +22,6 @@ elif torch.backends.mps.is_available():
 else:
     device = torch.device("cpu")
 
-
-print(torch.cuda.is_available())
-print(torch.cuda.device_count())
-print(torch.cuda.current_device())
-print(torch.cuda.device(0))
-print(torch.cuda.get_device_name(0))
-weights = ResNet18_Weights.IMAGENET1K_V1
-model = resnet18(weights=weights)
-model.fc = nn.Linear(model.fc.in_features, 43)
-model = model.to(device)
-
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=args.lr)
-
 # CSV file setup
 csv_file = 'resnet_clean.csv'
 file_exists = os.path.isfile(csv_file)
@@ -71,6 +57,20 @@ def validate(model, loader, criterion):
     return running_loss / total, correct / total
 
 def main():
+    print(torch.cuda.is_available())
+    print(torch.cuda.device_count())
+    print(torch.cuda.current_device())
+    print(torch.cuda.device(0))
+    print(torch.cuda.get_device_name(0))
+
+    weights = ResNet18_Weights.IMAGENET1K_V1
+    model = resnet18(weights=weights)
+    model.fc = nn.Linear(model.fc.in_features, 43)
+    model = model.to(device)
+
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=args.lr)
+
     train_loader, val_loader = load.train_load()
     num_epochs = args.epochs  # Use command-line argument for epochs
     

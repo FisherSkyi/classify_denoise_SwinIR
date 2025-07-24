@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
 import load  # assumes train_load() is defined in load.py
+from torchsummary import summary
 
 # Define a simple CNN
 class SimpleCNN(nn.Module):
@@ -74,14 +75,15 @@ def validate(model, loader, criterion):
 
 # Main training loop
 def main():
-    train_loader, val_loader = load.train_load()
-    for epoch in range(10):
-        train_loss, train_acc = train(model, train_loader, optimizer, criterion)
-        val_loss, val_acc = validate(model, val_loader, criterion)
-        print(f"Epoch {epoch+1}/10")
-        print(f"  Train Loss: {train_loss:.4f}, Accuracy: {train_acc:.4f}")
-        print(f"  Val   Loss: {val_loss:.4f}, Accuracy: {val_acc:.4f}")
-    torch.save(model.state_dict(), "simplecnn_gtsrb.pth")
+    # train_loader, val_loader = load.train_load()
+    # for epoch in range(10):
+    #     train_loss, train_acc = train(model, train_loader, optimizer, criterion)
+    #     val_loss, val_acc = validate(model, val_loader, criterion)
+    #     print(f"Epoch {epoch+1}/10")
+    #     print(f"  Train Loss: {train_loss:.4f}, Accuracy: {train_acc:.4f}")
+    #     print(f"  Val   Loss: {val_loss:.4f}, Accuracy: {val_acc:.4f}")
+    # torch.save(model.state_dict(), "simplecnn_gtsrb.pth")
+    print(summary(SimpleCNN(), input_size=(3, 64, 64)))
 
 if __name__ == "__main__":
     main()

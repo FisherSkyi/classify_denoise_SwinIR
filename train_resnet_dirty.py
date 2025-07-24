@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torchvision.models import resnet18, ResNet18_Weights
 from tqdm import tqdm
-import load
+import load_dirty
 import argparse
 import csv
 import os
@@ -69,7 +69,7 @@ def main():
     model = model.to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
-    train_loader, val_loader = load.train_load()
+    train_loader, val_loader = load_dirty.train_load()
     num_epochs = args.epochs  # Use command-line argument for epochs
     # Write CSV header if file doesn't exist
     with open(csv_file, 'w', newline='') as f:

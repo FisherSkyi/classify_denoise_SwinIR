@@ -47,7 +47,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else
                       "mps" if torch.backends.mps.is_available() else "cpu")
 
 # CSV file setup
-csv_file = 'resnet_clean.csv'
+csv_file = 'cnn_clean.csv'
 file_exists = os.path.isfile(csv_file)
 
 # Training function

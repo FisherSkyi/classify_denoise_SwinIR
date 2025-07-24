@@ -58,46 +58,46 @@ def validate(model, loader, criterion):
     return running_loss / total, correct / total
 
 def main():
-    # print(torch.cuda.is_available())
-    # print(torch.cuda.device_count())
-    # print(torch.cuda.current_device())
-    # print(torch.cuda.device(0))
-    # print(torch.cuda.get_device_name(0))
-    #
+    print(torch.cuda.is_available())
+    print(torch.cuda.device_count())
+    print(torch.cuda.current_device())
+    print(torch.cuda.device(0))
+    print(torch.cuda.get_device_name(0))
+
     weights = ResNet18_Weights.IMAGENET1K_V1
     model = resnet18(weights=weights)
     model.fc = nn.Linear(model.fc.in_features, 43)
     model = model.to(device)
-    #
-    # criterion = nn.CrossEntropyLoss()
-    # optimizer = optim.Adam(model.parameters(), lr=args.lr)
-    #
-    # train_loader, val_loader = load.train_load()
-    # num_epochs = args.epochs  # Use command-line argument for epochs
-    #
-    # # Write CSV header if file doesn't exist
-    # with open(csv_file, 'w', newline='') as f:
-    #     writer = csv.writer(f)
-    #     if not file_exists:
-    #         writer.writerow(['Epoch', 'Train_Loss', 'Train_Accuracy', 'Val_Loss', 'Val_Accuracy'])
-    #
-    # for epoch in range(num_epochs):
-    #     train_loss, train_acc = train(model, train_loader, optimizer, criterion)
-    #     val_loss, val_acc = validate(model, val_loader, criterion)
-    #
-    #     # Save stats to CSV
-    #     with open(csv_file, 'a', newline='') as f:
-    #         writer = csv.writer(f)
-    #         writer.writerow([epoch + 1, f"{train_loss:.4f}", f"{train_acc:.4f}",
-    #                        f"{val_loss:.4f}", f"{val_acc:.4f}"])
-    #
-    #     # Print progress
-    #     print(f"Epoch {epoch + 1}/{num_epochs}")
-    #     print(f"  Train loss: {train_loss:.4f}, acc: {train_acc:.4f}")
-    #     print(f"  Val   loss: {val_loss:.4f}, acc: {val_acc:.4f}")
-    #
-    # torch.save(model.state_dict(), "resnet18_gtsrb.pth")
-    print(summary(model, input_size=(3, 64, 64)))
+
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=args.lr)
+
+    train_loader, val_loader = load.train_load()
+    num_epochs = args.epochs  # Use command-line argument for epochs
+
+    # Write CSV header if file doesn't exist
+    with open(csv_file, 'w', newline='') as f:
+        writer = csv.writer(f)
+        if not file_exists:
+            writer.writerow(['Epoch', 'Train_Loss', 'Train_Accuracy', 'Val_Loss', 'Val_Accuracy'])
+
+    for epoch in range(num_epochs):
+        train_loss, train_acc = train(model, train_loader, optimizer, criterion)
+        val_loss, val_acc = validate(model, val_loader, criterion)
+
+        # Save stats to CSV
+        with open(csv_file, 'a', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow([epoch + 1, f"{train_loss:.4f}", f"{train_acc:.4f}",
+                           f"{val_loss:.4f}", f"{val_acc:.4f}"])
+
+        # Print progress
+        print(f"Epoch {epoch + 1}/{num_epochs}")
+        print(f"  Train loss: {train_loss:.4f}, acc: {train_acc:.4f}")
+        print(f"  Val   loss: {val_loss:.4f}, acc: {val_acc:.4f}")
+
+    torch.save(model.state_dict(), "resnet18_gtsrb.pth")
+    # print(summary(model, input_size=(3, 64, 64)))
 
 if __name__ == "__main__":
     main()

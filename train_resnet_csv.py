@@ -75,7 +75,7 @@ def main():
     num_epochs = args.epochs  # Use command-line argument for epochs
     
     # Write CSV header if file doesn't exist
-    with open(csv_file, 'a', newline='') as f:
+    with open(csv_file, 'w', newline='') as f:
         writer = csv.writer(f)
         if not file_exists:
             writer.writerow(['Epoch', 'Train_Loss', 'Train_Accuracy', 'Val_Loss', 'Val_Accuracy'])

@@ -1,5 +1,5 @@
 # Road Sign Classification with Denoising Pipeline Approach
-[Yu Letian](https://github.com/FisherSkyi), Sun Yuqi
+[Yu Letian](https://github.com/FisherSkyi), Sun Yuqi, Zhang Jiaqi
 
 [email of author](yuletian@u.nus.edu)
 
@@ -17,22 +17,25 @@ This repository is the PyTorch implementation of our idea: *Road Sign Classifica
 ### Dataset
 ```text
 # Directory structure of the dataset
-test/
-  ├── Images/
-  │    ├── 00000.ppm
-  │    ├── 00001.ppm
-  │    └── ...
-  └── GT-final_test.csv  # contains image names and labels
-train/
-  ├── class0/
-  │    ├── img1.png
+GTSRB/
+  ├── train/
+  │    ├── 00000/
+  │    │    ├── 00000_00000.ppm
+  │    │    ├── 00000_00001.ppm
+  │    │    ├── ...
+  │    │    └── GT-00000.csv
+  │    ├── 00001/
   │    ├── ...
-  │    └── GT-00000.csv
-  ├── class1/
-  │    ├── imgA.png
-  │    ├── ...
-  ├── Readme-Images.txt
+  │    ├── 00042/
+  │    └── Readme-Images.txt
+  ├── test/
+  │    ├── Images/
+  │    │    ├── 00000.ppm
+  │    │    ├── 00001.ppm
+  │    │    └── ...
+  │    └── GT-final_test.csv
 ```
+
 
 ### License-and-Acknowledgement
 

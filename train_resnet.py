@@ -12,7 +12,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--lr", type=float, default=1e-4, help="Learning rate")
 parser.add_argument('--epochs', type=int, default=5)
 parser.add_argument('--batch_size', type=int, default=64)
-# parser.add_argument("--beta", type=float, default=0.1, help="Beta value")
 args = parser.parse_args()
 lr = args.lr
 
@@ -51,7 +50,6 @@ def train(model, loader, optimizer, criterion):
         correct += (preds == labels).sum().item()
         total += labels.size(0)
 
-
     return running_loss / total, correct / total
 
 def validate(model, loader, criterion):
@@ -68,7 +66,6 @@ def validate(model, loader, criterion):
             _, preds = torch.max(outputs, 1)
             correct += (preds == labels).sum().item()
             total += labels.size(0)
-
 
     return running_loss / total, correct / total
 

@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
-import load  # assumes train_load() is defined in load.py
+import load
 from torchsummary import summary
 import argparse
 import os

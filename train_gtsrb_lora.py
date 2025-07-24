@@ -9,8 +9,6 @@ from tqdm import tqdm
 import load
 import LoRA.loralib as lora
 from SwinIR.models.network_swinir import SwinIR
-import wandb
-from wandb.sdk.wandb_settings import Settings
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -20,17 +18,7 @@ parser.add_argument('--batch_size', type=int, default=32)
 # parser.add_argument("--beta", type=float, default=0.1, help="Beta value")
 args = parser.parse_args()
 lr = args.lr
-wandb.init(
-    project="swinir-gtsrb",
-    name="swinir-lora",
-    config={
-        "lr": lr,
-        "epochs": args.epochs,
-        "architecture": "SwinIR + LoRA",
-        "backbone": "SwinIR-M_noise15",
-    },
-    settings=Settings(init_timeout=120)
-)
+
 
 if torch.cuda.is_available():
     device = torch.device("cuda")
@@ -96,7 +84,7 @@ backbone = SwinIR(
 
 # NOTE: SwinIR pretrained models often store weights under a 'params' key.
 # Load the state dictionary.
-pretrained_model = torch.load('SwinIR/model_zoo/swinir/net_Q_3300.pth')
+pretrained_model = torch.load('SwinIR/model_zoo/swinir/005_colorDN_DFWB_s128w8_SwinIR-M_noise15.pth', map_location=device)
 if 'params' in pretrained_model:
     pretrained_state_dict = pretrained_model['params']
 else:
@@ -132,12 +120,6 @@ def train(model, loader, optimizer, criterion):
         correct += (preds == labels).sum().item()
         total += labels.size(0)
 
-        # wandb.log({
-        #     "batch_train_loss": loss.item(),
-        #     "batch_train_acc": (preds == labels).float().mean().item(),
-        #     "batch_idx": batch_idx
-        # })
-
 
     return running_loss / total, correct / total
 
@@ -156,12 +138,6 @@ def validate(model, loader, criterion):
             correct += (preds == labels).sum().item()
             total += labels.size(0)
 
-            # wandb.log({
-            #     "batch_val_loss": loss.item(),
-            #     "batch_val_acc": (preds == labels).float().mean().item(),
-            #     "val_batch_idx": batch_idx
-            # })
-
     return running_loss / total, correct / total
 
 def main():
@@ -176,16 +152,8 @@ def main():
         print(f"  Train loss: {train_loss:.4f}, acc: {train_acc:.4f}")
         print(f"  Val   loss: {val_loss:.4f}, acc: {val_acc:.4f}")
 
-        wandb.log({
-            "epoch": epoch + 1,
-            "train_loss": train_loss,
-            "train_acc": train_acc,
-            "val_loss": val_loss,
-            "val_acc": val_acc,
-        }, step=epoch)
 
     torch.save(lora.lora_state_dict(model), 'swinir_gtsrb_lora.pth')
-    wandb.finish()
 
 
 if __name__ == "__main__":

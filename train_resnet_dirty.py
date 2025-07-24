@@ -88,7 +88,7 @@ def main():
         print(f"Epoch {epoch + 1}/{num_epochs}")
         print(f"  Train loss: {train_loss:.4f}, acc: {train_acc:.4f}")
         print(f"  Val   loss: {val_loss:.4f}, acc: {val_acc:.4f}")
-    torch.save(model.state_dict(), "resnet18_gtsrb_dirty.pth")
+    torch.save(model.state_dict(), f"resnet18_dirty_Epoch{args.epoch}.pth")
     print(summary(model, input_size=(3, 64, 64)))
 
 if __name__ == "__main__":

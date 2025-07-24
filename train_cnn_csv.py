@@ -114,7 +114,7 @@ def main():
         print(f"  Train Loss: {train_loss:.4f}, Accuracy: {train_acc:.4f}")
         print(f"  Val   Loss: {val_loss:.4f}, Accuracy: {val_acc:.4f}")
 
-    torch.save(model.state_dict(), "simplecnn_gtsrb.pth")
+    torch.save(model.state_dict(), f"cnn_clean_Epoch{args.epoch}.pth")
     # print(summary(SimpleCNN(), input_size=(3, 64, 64)))
 
 if __name__ == "__main__":

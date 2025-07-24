@@ -48,9 +48,9 @@ def train_load():
         root_dir='GTSRB/train',
         transform=transform
     )
-
+    # print(f"Train size: {len(full_dataset)}")
     train_size = int(0.8 * len(full_dataset))
-    print(f"Train size: {train_size}")
+    # print(f"Train size: {train_size}")
     val_size = len(full_dataset) - train_size
 
     train_dataset, val_dataset = random_split(full_dataset, [train_size, val_size])
@@ -99,3 +99,14 @@ def test_load():
     test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False, pin_memory=False)
 
     return test_loader
+
+# def main():
+#     train_loader, val_loader = train_load()
+#     test_loader = test_load()
+#
+#     print(f"Train Loader: {len(train_loader.dataset)} samples")
+#     print(f"Validation Loader: {len(val_loader.dataset)} samples")
+#     print(f"Test Loader: {len(test_loader.dataset)} samples")
+#
+# if __name__ == "__main__":
+#     main()

@@ -45,7 +45,7 @@ def train_load():
     ])
 
     full_dataset = GTSRBTrainDataset(
-        root_dir='GTSRB/train',
+        root_dir="GTSRB/train-gaussian-60.0",
         transform=transform
     )
 

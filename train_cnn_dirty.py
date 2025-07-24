@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
-import load  # assumes train_load() is defined in load.py
+import load_dirty  # assumes train_load() is defined in load.py
 from torchsummary import summary
 import argparse
 import os
@@ -47,7 +47,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else
                       "mps" if torch.backends.mps.is_available() else "cpu")
 
 # CSV file setup
-csv_file = 'cnn_clean.csv'
+csv_file = 'cnn_dirty.csv'
 file_exists = os.path.isfile(csv_file)
 
 # Training function
@@ -92,7 +92,7 @@ def main():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=lr)
     # Training loop
-    train_loader, val_loader = load.train_load()
+    train_loader, val_loader = load_dirty.train_load()
 
     num_epochs = args.epochs
 

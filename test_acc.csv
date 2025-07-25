@@ -1,6 +1,4 @@
 Model,noise_level, acc
-resnet18_gtsrb.pth,0, 0.8413
-resnet18_gtsrb_dirty,0, 0.1777
 cnn_clean,
 cnn_clean, 60, 0.3756
 cnn_dirty, 0, 0.4689

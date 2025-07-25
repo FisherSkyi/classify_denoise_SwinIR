@@ -15,7 +15,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate")
 parser.add_argument('--epochs', type=int, default=5)
 parser.add_argument('--batch_size', type=int, default=32)
-# parser.add_argument("--beta", type=float, default=0.1, help="Beta value")
 args = parser.parse_args()
 lr = args.lr
 

@@ -10,6 +10,7 @@ import load
 import LoRA.loralib as lora
 from SwinIR.models.network_swinir import SwinIR
 import argparse
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate")

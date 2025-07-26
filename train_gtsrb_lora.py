@@ -13,7 +13,7 @@ import argparse
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate")
+parser.add_argument("--lr", type=float, default=4e-3, help="Learning rate")
 parser.add_argument('--epochs', type=int, default=5)
 parser.add_argument('--batch_size', type=int, default=32)
 args = parser.parse_args()
@@ -22,6 +22,8 @@ lr = args.lr
 
 if torch.cuda.is_available():
     device = torch.device("cuda")
+elif torch.backends.mps.is_available():
+    device = torch.device("mps")
 else:
     device = torch.device("cpu")
 
@@ -142,7 +144,7 @@ def validate(model, loader, criterion):
 
 def main():
     train_loader, val_loader = load.train_load()
-    num_epochs = 10
+    num_epochs = args.epochs
 
     for epoch in range(num_epochs):
         train_loss, train_acc = train(model, train_loader, optimizer, criterion)
@@ -153,7 +155,7 @@ def main():
         print(f"  Val   loss: {val_loss:.4f}, acc: {val_acc:.4f}")
 
 
-    torch.save(lora.lora_state_dict(model), 'swinir_gtsrb_lora.pth')
+    torch.save(lora.lora_state_dict(model), f'swinir_gtsrb_lora_lr{args.lr}_epoch{args.epochs}.pth')
 
 
 if __name__ == "__main__":

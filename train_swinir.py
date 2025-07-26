@@ -10,7 +10,7 @@ from torchvision import transforms
 import torch.optim as optim
 
 
-from SwinIR.models.network_swinir import SwinIR           # pip install timm && clone SwinIR
+from SwinIR.models.network_swinir_row import SwinIR           # pip install timm && clone SwinIR
 
 # ------------------------------------------------------------------------------
 # 1.  Dataset that returns (noisy, clean)

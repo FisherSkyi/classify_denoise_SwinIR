@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
-import load_dirty  # assumes train_load() is defined in load.py
-from torchsummary import summary
+import load_dirty
+# from torchsummary import summary
 import argparse
 import os
 import csv
@@ -84,11 +84,9 @@ def validate(model, loader, criterion):
 
 # Main training loop
 def main():
-    print(torch.cuda.get_device_name(0))
-
+    # print(torch.cuda.get_device_name(0))
     # Model, criterion, optimizer
     model = SimpleCNN().to(device)
-
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=lr)
     # Training loop

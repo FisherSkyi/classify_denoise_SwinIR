@@ -24,20 +24,8 @@ venv/
 # System files
 Thumbs.db
 
-select_data.sh
-classify.sh
-
 .idea/
-test_select.py
-TSRD-Test/
 
-filtered-tsrd-test/
-tsrd-train/
-
-data.zip
-data/
-
-image_table_src/
 
 GTSRB.zip
 
@@ -57,4 +45,3 @@ SwinIR/figs/
 SwinIR/model_zoo/swinir/
 
 LoRA/examples/
-wandb/

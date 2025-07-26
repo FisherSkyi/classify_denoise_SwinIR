@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
 import load
-from torchsummary import summary
+# from torchsummary import summary
 import argparse
 import os
 import csv
@@ -114,7 +114,7 @@ def main():
         print(f"  Train Loss: {train_loss:.4f}, Accuracy: {train_acc:.4f}")
         print(f"  Val   Loss: {val_loss:.4f}, Accuracy: {val_acc:.4f}")
 
-    torch.save(model.state_dict(), f"cnn_clean_Epoch{args.epoch}.pth")
+    torch.save(model.state_dict(), f"cnn_clean_Epoch{args.epochs}_lr{args.lr}.pth")
     # print(summary(SimpleCNN(), input_size=(3, 64, 64)))
 
 if __name__ == "__main__":

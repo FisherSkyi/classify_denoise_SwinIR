@@ -8,7 +8,7 @@ import os
 from tqdm import tqdm
 import load
 import LoRA.loralib as lora
-from SwinIR.models.network_swinir import SwinIR
+from SwinIR.models.network_swinir_lora import SwinIR
 import argparse
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 

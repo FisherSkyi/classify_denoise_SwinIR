@@ -7,7 +7,7 @@ import load
 import argparse
 import csv
 import os
-from torchsummary import summary
+# from torchsummary import summary
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--lr", type=float, default=1e-4, help="Learning rate")
@@ -18,8 +18,8 @@ lr = args.lr
 
 if torch.cuda.is_available():
     device = torch.device("cuda")
-# elif torch.backends.mps.is_available():
-#     device = torch.device("mps")
+elif torch.backends.mps.is_available():
+    device = torch.device("mps")
 else:
     device = torch.device("cpu")
 
@@ -62,7 +62,7 @@ def main():
     # print(torch.cuda.device_count())
     # print(torch.cuda.current_device())
     # print(torch.cuda.device(0))
-    print(torch.cuda.get_device_name(0))
+    # print(torch.cuda.get_device_name(0))
 
     weights = ResNet18_Weights.IMAGENET1K_V1
     model = resnet18(weights=weights)
@@ -95,7 +95,7 @@ def main():
         print(f"  Train loss: {train_loss:.4f}, acc: {train_acc:.4f}")
         print(f"  Val   loss: {val_loss:.4f}, acc: {val_acc:.4f}")
 
-    torch.save(model.state_dict(), f"resnet18_clean_Epoch{args.epoch}.pth")
+    torch.save(model.state_dict(), f"resnet18_clean_Epoch{args.epoch}_lr{args.lr}.pth")
     # print(summary(model, input_size=(3, 64, 64)))
 
 if __name__ == "__main__":

@@ -84,7 +84,7 @@ def validate(model, loader, criterion):
 
 # Main training loop
 def main():
-    print(torch.cuda.get_device_name(0))
+    # print(torch.cuda.get_device_name(0))
 
     # Model, criterion, optimizer
     model = SimpleCNN().to(device)

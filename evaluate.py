@@ -63,7 +63,7 @@ def test(model_path: str):
 
 
 def main():
-    model_path = "models/resnet18_clean_Epoch5_lr0.0001.pth"
+    model_path = "models/resnet18_dirty_Epoch5.pth"
     test(model_path)
 
 if __name__ == "__main__":

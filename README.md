@@ -38,6 +38,31 @@ GTSRB/
   │    │    └── ...
   │    └── GT-final_test.csv
 ```
+### Training
+To train the model, run the following command:
+```bash
+  # to train a resnet18 model with clean images
+  # 1. modify in load.py, change root_dir to 'GTSRB/train'
+  # 2. run the training loop below, select the corresponding file
+  python train_resnet_dirty.py
+```
+
+### Testing
+To test the single model, run the following command:
+```bash
+  # to test a resnet18 model with clean images
+  # 1. modify in load.py, change root_dir to 'GTSRB/test/Images'
+  # 2. modify in load.py, change img_dir='GTSRB/test',csv_file to 'GTSRB/test/GT-final_test.csv'
+  python evaluate.py
+```
+
+To test the pipeline approach, run the following command:
+```bash
+  # to test a resnet18 model with denoised images
+  # 1. modify in load.py, change root_dir to 'GTSRB/test/Images'
+  # 2. modify in load.py, change img_dir='GTSRB/test',csv_file to 'GTSRB/test/GT-final_test.csv'
+  python evaluate_pipeline.py
+```
 
 
 ### License-and-Acknowledgement

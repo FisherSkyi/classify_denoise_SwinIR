@@ -14,12 +14,12 @@ cnn_clean, 60, 0.3731
 cnn_clean, 80, 0.3298
 cnn_clean, 100, 0.2896
 
-resnet18_dirty, 0, 0.4747*
-resnet18_dirty, 20, 0.6577*
-resnet18_dirty, 40, 0.6820*
-resnet18_dirty, 60, 0.6419*
-resnet18_dirty, 80, 0.5678*
-resnet18_dirty, 100,0.4951*
+resnet18_dirty, 0, 0.5341
+resnet18_dirty, 20, 0.6953
+resnet18_dirty, 40, 0.7064
+resnet18_dirty, 60, 0.6627
+resnet18_dirty, 80, 0.5907
+resnet18_dirty, 100,0.5134
 
 resnet_clean,  0, 0.9268
 resnet_clean, 20, 0.6736
@@ -32,9 +32,11 @@ cnn_pipeline,  0, 0.5587
 cnn_pipeline, 20, 0.5100
 cnn_pipeline, 40, 0.4417
 cnn_pipeline, 60, 0.3798
+cnn_pipeline, 80, 0.3285
 
 resnet_pipeline,  0, 0.9268
 resnet_pipeline, 20, 0.8039
 resnet_pipeline, 40, 0.4490
 resnet_pipeline, 60, 0.2618
+resnet_pipeline, 80, 0.1520
 

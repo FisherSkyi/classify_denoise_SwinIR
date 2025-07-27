@@ -91,8 +91,8 @@ def test_load():
     ])
 
     test_dataset = GTSRBTestDataset(
-        img_dir='GTSRB/test-gaussian-20.0',
-        csv_path='GTSRB/GT-final_test.csv',
+        img_dir='GTSRB/test_denoise_noise80',
+        csv_path='GTSRB/GT-final_test_renamed.csv',
         transform=test_transform
     )
 

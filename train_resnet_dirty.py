@@ -18,8 +18,8 @@ lr = args.lr
 
 if torch.cuda.is_available():
     device = torch.device("cuda")
-# elif torch.backends.mps.is_available():
-#     device = torch.device("mps")
+elif torch.backends.mps.is_available():
+    device = torch.device("mps")
 else:
     device = torch.device("cpu")
 
@@ -88,8 +88,8 @@ def main():
         print(f"Epoch {epoch + 1}/{num_epochs}")
         print(f"  Train loss: {train_loss:.4f}, acc: {train_acc:.4f}")
         print(f"  Val   loss: {val_loss:.4f}, acc: {val_acc:.4f}")
-    torch.save(model.state_dict(), f"resnet18_dirty_Epoch{args.epoch}.pth")
-    print(summary(model, input_size=(3, 64, 64)))
+    torch.save(model.state_dict(), f"resnet18_dirty_Epoch{args.epochs}.pth")
+    # print(summary(model, input_size=(3, 64, 64)))
 
 if __name__ == "__main__":
     main()

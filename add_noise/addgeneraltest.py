@@ -5,7 +5,6 @@ from PIL import Image
 from wand.image import Image as WandImage
 import io
 
-
 def add_gaussian_noise(img: Image.Image, std: float) -> Image.Image:
     """
     Return a copy of *img* with additive Gaussian noise.

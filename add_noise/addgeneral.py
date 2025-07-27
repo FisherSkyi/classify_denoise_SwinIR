@@ -2,8 +2,7 @@ import os
 from pathlib import Path
 import numpy as np
 from PIL import Image
-
-from wand.image import Image as WandImage
+# from wand.image import Image as WandImage
 import io
 
 def add_gaussian_noise(img: Image.Image, std: float) -> Image.Image:
@@ -91,8 +90,8 @@ def main() -> None:
         print("Please enter a valid floating-point number.")
         return
 
-    src_root = Path("GTSRB/train")          # original clean dataset
-    dst_root = Path(f"GTSRB/train-{noise_type}-{severity}")    # noisy copy destination
+    src_root = Path("../GTSRB/train")          # original clean dataset
+    dst_root = Path(f"../GTSRB/train-{noise_type}-{severity}")    # noisy copy destination
 
     if not src_root.exists():
         print(f"Source folder not found: {src_root}")

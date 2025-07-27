@@ -51,3 +51,5 @@ models/
 
 resnet18_dirty_Epoch5.pth
 models/*.pth
+
+*.pth

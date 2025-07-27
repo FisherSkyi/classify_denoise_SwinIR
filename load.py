@@ -45,7 +45,7 @@ def train_load():
     ])
 
     full_dataset = GTSRBTrainDataset(
-        root_dir='GTSRB/train',
+        root_dir='GTSRB/train-gaussian-20.0',
         transform=transform
     )
     # print(f"Train size: {len(full_dataset)}")
@@ -91,7 +91,7 @@ def test_load():
     ])
 
     test_dataset = GTSRBTestDataset(
-        img_dir='GTSRB/test-gaussian-20.0',
+        img_dir='GTSRB/test_denoise_noise100',
         csv_path='GTSRB/GT-final_test_renamed.csv',
         transform=test_transform
     )

@@ -50,3 +50,4 @@ models/005_colorDN_DFWB_s128w8_SwinIR-M_noise15.pth
 models/
 
 resnet18_dirty_Epoch5.pth
+models/*.pth
